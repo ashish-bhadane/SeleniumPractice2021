@@ -4,6 +4,7 @@ import org.testng.Assert;
 import org.openqa.selenium.By;
 import org.testng.annotations.Test;
 import pom.base.BaseTest;
+import pom.pages.*;
 
 public class SeleniumTest extends BaseTest {
 
@@ -11,65 +12,75 @@ public class SeleniumTest extends BaseTest {
     public void guestCheckoutDirectTransfer() throws InterruptedException {
 
         driver.get("https://askomdch.com");
-        driver.findElement(By.cssSelector("#menu-item-1227")).click();
-        driver.findElement(By.id("woocommerce-product-search-field-0")).sendKeys("Blue");
+        HomePage homePage = new HomePage(driver);
+        StorePage storePage = new StorePage(driver);
+        CartPage cartPage = new CartPage(driver);
+        CheckoutPage checkoutPage = new CheckoutPage(driver);
+
+        homePage.clickStoreLink();
         Thread.sleep(2000);
-        driver.findElement(By.cssSelector("button[value='Search']")).click();
+        storePage.enterSearchText("blue");
+        storePage.clickOnSearchButton();
+        Assert.assertEquals(storePage.getTitle(),"Search results: “blue”");
+        storePage.clickOnAddToCart("Blue Shoes");
         Thread.sleep(2000);
-        Assert.assertEquals
-                (driver.findElement(By.cssSelector(".woocommerce-products-header__title.page-title")).getText(),"Search results: “Blue”");
-        driver.findElement(By.cssSelector("a[aria-label='Add “Blue Shoes” to your cart']")).click();
+        storePage.clickOnViewCartBtn();
         Thread.sleep(2000);
-        driver.findElement(By.cssSelector("a[title='View cart']")).click();
+
+        cartPage.clickCheckoutBtn();
         Thread.sleep(2000);
-        driver.findElement(By.cssSelector(".checkout-button")).click();
+
+        Assert.assertEquals(checkoutPage.getheading(),"Checkout");
+        checkoutPage.enterFirstName("TestFirstName");
+        checkoutPage.enterLastName("TestLastName");
+        checkoutPage.enterBillingAddress("Talegaon, Pune");
+        checkoutPage.enterCity("Pune");
+        checkoutPage.enterPostCode("90021");
+        checkoutPage.enterEmail("abc@xyz.com");
+        checkoutPage.clickPlaceorder();
         Thread.sleep(2000);
-        Assert.assertEquals(driver.findElement(By.xpath("//h1")).getText(),"Checkout");
-        driver.findElement(By.cssSelector("#billing_first_name")).sendKeys("testFirstName");
-        driver.findElement(By.cssSelector("#billing_last_name")).sendKeys("testLastName");
-        driver.findElement(By.cssSelector("#billing_address_1")).sendKeys("Talegaon, Pune");
-        driver.findElement(By.cssSelector("#billing_city")).sendKeys("Tinseltown");
-        driver.findElement(By.id("billing_postcode")).sendKeys("90011");
-        driver.findElement(By.id("billing_email")).sendKeys("x@yz.com");
-        driver.findElement(By.id("place_order")).click();
-        Thread.sleep(2000);
-        Assert.assertEquals(driver.findElement(By.cssSelector(".woocommerce-notice")).getText(),
-                "Thank you. Your order has been received.");
+        Assert.assertEquals(checkoutPage.getSuccessMsg(), "Thank you. Your order has been received.");
     }
     @Test
     public void loginAndCheckoutDirectTransfer() throws InterruptedException {
 
         driver.get("https://askomdch.com");
-        driver.findElement(By.cssSelector("#menu-item-1227")).click();
-        driver.findElement(By.id("woocommerce-product-search-field-0")).sendKeys("Blue");
+        HomePage homePage = new HomePage(driver);
+        StorePage storePage = new StorePage(driver);
+        CartPage cartPage = new CartPage(driver);
+        LoginPage loginPage = new LoginPage(driver);
+        CheckoutPage checkoutPage = new CheckoutPage(driver);
+
+        homePage.clickStoreLink();
         Thread.sleep(2000);
-        driver.findElement(By.cssSelector("button[value='Search']")).click();
+        storePage.enterSearchText("blue");
+        storePage.clickOnSearchButton();
+        Assert.assertEquals(storePage.getTitle(),"Search results: “blue”");
+        storePage.clickOnAddToCart("Blue Shoes");
         Thread.sleep(2000);
-        Assert.assertEquals
-                (driver.findElement(By.cssSelector(".woocommerce-products-header__title.page-title")).getText(),"Search results: “Blue”");
-        driver.findElement(By.cssSelector("a[aria-label='Add “Blue Shoes” to your cart']")).click();
+        storePage.clickOnViewCartBtn();
         Thread.sleep(2000);
-        driver.findElement(By.cssSelector("a[title='View cart']")).click();
+
+        cartPage.clickCheckoutBtn();
         Thread.sleep(2000);
-        driver.findElement(By.cssSelector(".checkout-button")).click();
-        Thread.sleep(2000);
-        driver.findElement(By.cssSelector(".showlogin")).click();
+
+        cartPage.navigateToLogin();
         Thread.sleep(1000);
-        driver.findElement(By.cssSelector("#username")).sendKeys("abdemo1");
-        driver.findElement(By.cssSelector("#password")).sendKeys("Password-1");
-        driver.findElement(By.cssSelector("button[value='Login']")).click();
+
+        loginPage.enterUserName("abdemo1");
+        loginPage.enterPassword("Password-1");
+        loginPage.login();
         Thread.sleep(1000);
-        Assert.assertEquals(driver.findElement(By.xpath("//h1")).getText(),"Checkout");
-        driver.findElement(By.cssSelector("#billing_first_name")).sendKeys("testFirstName");
-        driver.findElement(By.cssSelector("#billing_last_name")).sendKeys("testLastName");
-        driver.findElement(By.cssSelector("#billing_address_1")).sendKeys("Talegaon, Pune");
-        driver.findElement(By.cssSelector("#billing_city")).sendKeys("Tinseltown");
-        driver.findElement(By.id("billing_postcode")).sendKeys("90011");
-        driver.findElement(By.id("billing_email")).clear();
-        driver.findElement(By.id("billing_email")).sendKeys("abdemo1@xyz.com");
-        driver.findElement(By.id("place_order")).click();
-        Thread.sleep(2000);
-        Assert.assertEquals(driver.findElement(By.cssSelector(".woocommerce-notice")).getText(),
-                "Thank you. Your order has been received.");
+
+        checkoutPage.enterFirstName("TestFirstName");
+        checkoutPage.enterLastName("TestLastName");
+        checkoutPage.enterBillingAddress("Talegaon, Pune");
+        checkoutPage.enterCity("Pune");
+        checkoutPage.enterPostCode("90021");
+        checkoutPage.enterEmail("abdemo1@xyz.com");
+        Thread.sleep(1000);
+        checkoutPage.clickPlaceorder();
+        Thread.sleep(3000);
+        Assert.assertEquals(checkoutPage.getSuccessMsg(), "Thank you. Your order has been received.");
     }
 }
